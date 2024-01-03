@@ -57,6 +57,18 @@ pipeline {
         }
       }
     }
+    stage ('SAST') {
+      steps {
+        container('slscan') {
+          sh 'scan --type java,depscan --build'
+        }
+      }
+      post {
+        success {
+          archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint:true, onlyIfSuccessful: true
+        }
+      }
+    }
     stage('Package') {
       parallel {
         stage('Create Jarfile') {
@@ -76,6 +88,31 @@ pipeline {
         }
       }
     }
+
+    // Image scanning
+    stage("Image Analysis") {
+      parallel {
+        stage("Image Lint") {
+          // Dockle
+          steps {
+            container('docker-tools') {
+              sh 'dockle docker.io/ennc0d3/dsodemo'
+            }
+          }
+        }
+        stage("Image Vuln") {
+          // Trivy
+          steps {
+            container('docker-tools') {
+              sh 'trivy image --exit-code 1 ennc0d3/dsodemo'
+            }
+              
+          }
+
+        }
+      }
+    }
+    //
 
     stage('Deploy to Dev') {
       steps {
