@@ -1,0 +1,16 @@
+ingress:
+  enabled: true
+  tls:
+    enabled: false
+    secretName: ""
+  annotations: {}
+  host: dependencytrack.example.org
+apiserver:
+  resources:
+    requests:
+      cpu: 0.8
+      memory: 1024Mi
+frontend:
+  replicaCount: 1
+  service:
+    type: LoadBalancer

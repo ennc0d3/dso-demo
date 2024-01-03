@@ -17,9 +17,14 @@ spec:
       labels:
         app: dso-demo
     spec:
+      automountServiceAccountToken: false
+      serviceAccountName: dso-demo-sa
       volumes:
         - name: tmp-path
           emptyDir: {}
+      securityContext: 
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - image: ennc0d3/dsodemo
         name: dsodemo
@@ -33,11 +38,13 @@ spec:
             cpu: "150m"
             memory: "250Mi"
         securityContext:
+          seccompProfile:
+            type: RuntimeDefault
           readOnlyRootFilesystem: true
           privileged: false
           allowPrivilegeEscalation: false
           runAsNonRoot: true
-          runAsUser: 1000
+          runAsUser: 11000
           capabilities:
             drop:
               - ALL
