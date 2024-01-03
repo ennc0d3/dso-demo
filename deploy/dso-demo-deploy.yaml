@@ -17,10 +17,32 @@ spec:
       labels:
         app: dso-demo
     spec:
+      volumes:
+        - name: tmp-path
+          emptyDir: {}
       containers:
       - image: ennc0d3/dsodemo
         name: dsodemo
         ports:
         - containerPort: 8080
-        resources: {}
-status: {}
+        resources: 
+          requests:
+            cpu: "50m"
+            memory: "50Mi"
+          limits:
+            cpu: "150m"
+            memory: "250Mi"
+        securityContext:
+          readOnlyRootFilesystem: true
+          privileged: false
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+          - name: tmp-path
+            mountPath: /tmp/
+
+
